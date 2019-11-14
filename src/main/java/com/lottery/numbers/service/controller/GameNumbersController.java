@@ -1,7 +1,7 @@
 package com.lottery.numbers.service.controller;
 
-import com.lottery.numbers.service.dto.GameNumbersDto;
 import com.lottery.numbers.service.service.GameNumbersService;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @RestController
 public class GameNumbersController {
@@ -22,15 +21,14 @@ public class GameNumbersController {
     }
 
     @GetMapping("/numbers")
-    public ResponseEntity<GameNumbersDto> getLastNumbers() {
-        return new ResponseEntity<>(gameNumbersService.getLastNumbers(), HttpStatus.OK);
-    }
+    public ResponseEntity<Object> getLastNumbersOrByDate(
+            @RequestParam(value = "dateFrom", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime dateFrom,
+            @RequestParam(value = "dateTo", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime dateTo,
+            Pageable pageable) {
 
-    //TODO
-    @GetMapping("/numbers/find")
-    public ResponseEntity<List<GameNumbersDto>> getNumbersByDate(
-            @RequestParam(value = "dateFrom") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime from,
-            @RequestParam(value = "dateFrom") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDateTime to) {
-        return new ResponseEntity<>(gameNumbersService.getNumbersByDate(from, to), HttpStatus.OK);
+        return (dateFrom == null) ?
+                new ResponseEntity<>(gameNumbersService.getLastNumbers(), HttpStatus.OK) :
+                new ResponseEntity<>(gameNumbersService.getNumbersByDate(dateFrom, dateTo, pageable), HttpStatus.OK);
+
     }
 }

@@ -1,24 +1,19 @@
 package com.lottery.numbers.service.actuator;
 
-import com.mongodb.MongoClient;
-import com.mongodb.MongoDriverInformation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.info.Info;
 import org.springframework.boot.actuate.info.InfoContributor;
+import org.springframework.boot.actuate.mongo.MongoHealthIndicator;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
-import javax.sql.DataSource;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.sql.SQLException;
 import java.util.Map;
 
 @Component
 public class ExtendedInfoContributor implements InfoContributor {
-
-    @Autowired
-    private MongoClient mongoClient;
 
     @Value("${server.port}")
     private int port;
@@ -36,7 +31,6 @@ public class ExtendedInfoContributor implements InfoContributor {
                 Map.of("vm", Map.of("version", getJavaVersion(),"name", getJavaVmName()),
                         "runtime", Map.of("version", getJavaRuntimeVersion()),
                         "version", getJavaVmVersion())));
-        builder.withDetail("database", Map.of("version", getDatabaseVersion(),"name", getDatabaseName()));
     }
 
     private String getHealthCheckAddress() {
@@ -64,13 +58,4 @@ public class ExtendedInfoContributor implements InfoContributor {
         return System.getProperty("java.runtime.version");
     }
 
-    private String getDatabaseName() {
-      return "nope2";
-    }
-
-    private String getDatabaseVersion() {
-
-        return "nope";
-
-    }
 }

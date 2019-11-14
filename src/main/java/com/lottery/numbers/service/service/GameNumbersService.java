@@ -4,11 +4,14 @@ import com.lottery.numbers.service.dto.GameNumbersDto;
 import com.lottery.numbers.service.exceptions.custom.NotFoundEntityException;
 import com.lottery.numbers.service.model.GameNumbers;
 import com.lottery.numbers.service.repository.GameNumbersRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class GameNumbersService {
@@ -19,15 +22,14 @@ public class GameNumbersService {
         this.gameNumbersRepository = gameNumbersRepository;
     }
 
+    @Cacheable("numbers")
     public GameNumbersDto getLastNumbers() {
         return convertToGameNumbersDto(gameNumbersRepository.findFirstByOrderByDateDesc()
                 .orElseThrow(() -> new NotFoundEntityException(GameNumbers.class)));
     }
 
-    public List<GameNumbersDto> getNumbersByDate(LocalDateTime from, LocalDateTime to) {
-        return gameNumbersRepository.getByDateBetween(from, to).stream().map(this::convertToGameNumbersDto)
-                .collect(Collectors.toList());
-    }
+    public Page<GameNumbers> getNumbersByDate(LocalDateTime from, LocalDateTime to, Pageable pageable) {
+        return gameNumbersRepository.getByDateBetween(from, to, pageable);    }
 
     private GameNumbersDto convertToGameNumbersDto(GameNumbers gameNumbers) {
         return GameNumbersDto.builder()
