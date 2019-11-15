@@ -1,11 +1,8 @@
 package com.lottery.numbers.service.actuator;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.info.Info;
 import org.springframework.boot.actuate.info.InfoContributor;
-import org.springframework.boot.actuate.mongo.MongoHealthIndicator;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
 import java.net.InetAddress;

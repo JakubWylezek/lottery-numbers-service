@@ -3,8 +3,6 @@ package com.lottery.numbers.service.service;
 import com.lottery.numbers.service.model.GameNumbers;
 import com.lottery.numbers.service.repository.GameNumbersRepository;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -24,10 +22,9 @@ public class GenerateNumbersScheduler {
     }
 
     @Scheduled(cron = "${generation.numbers.time}")
-
     @CacheEvict("numbers")
     public void saveGeneratedNumbersToDatabase() {
-        int[] generatedNumbers = generateRandomNumbers(5, 40);
+        int[] generatedNumbers = generateRandomNumbers(5, 48);
         gameNumbersRepository.save(new GameNumbers(generatedNumbers, LocalDateTime.now()));
     }
 
@@ -41,7 +38,7 @@ public class GenerateNumbersScheduler {
 
             int newRandom;
             do {
-                newRandom = random.nextInt(maxRange + 1);
+                newRandom = random.nextInt(maxRange) + 1;
             } while (used.contains(newRandom));
             result[i] = newRandom;
             used.add(newRandom);
